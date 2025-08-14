@@ -7,6 +7,7 @@
 145768-Ogato Deborah Kerubo 
 94944-Antony Wanderi
 169648-Kamau Joseph Manene
+167242-Nyoike Brian Njehia
 
 ---
 
@@ -46,7 +47,7 @@ We designed **six models** representing the core entities of the banking system:
 ### Step 4: Views/ViewSets
 - **ModelViewSets** are used for CRUD operations.
 - **Custom actions** for:
-  - Deposit and withdraw in `TransactionViewSet` (updates account balance atomically).
+  - Deposit and withdraw in `TransactionViewSet` (updates account balance automatically).
 - **Permissions**:
   - Authenticated users can access endpoints.
   - Staff-only access for certain administrative actions.
