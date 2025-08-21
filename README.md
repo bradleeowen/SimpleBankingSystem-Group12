@@ -9,55 +9,84 @@
 169648-Kamau Joseph Manene
 167242-Nyoike Brian Njehia
 
+## Project Overview
+This project is a **Simple Banking System** implemented using Django and Django REST Framework (DRF).  
+It provides API endpoints to manage **Accounts** and **Transactions** with full CRUD functionality, validation, and automated testing.  
+
 ---
 
-## 1. Step-by-Step Project Implementation
+## Step-by-Step Implementation
 
-### Step 1: Project Setup
-- Created Django project `project_name` and app `banking`.
-- Installed dependencies: `django`, `djangorestframework`, and `djangorestframework-authtoken`.
-- Configured `INSTALLED_APPS` to include `rest_framework`, `rest_framework.authtoken`, and `banking`.
+### 1. Models and Relationships
 
-### Step 2: Models and Relationships
-We designed **six models** representing the core entities of the banking system:
-1. **Branch** – Represents a bank branch (fields: `name`, `location`).
-2. **Customer** – Holds customer personal details (`first_name`, `last_name`, `email`, `phone`).
-3. **Account** – Linked to a `Customer` and `Branch` via foreign keys. Tracks account number, type, and balance.
-4. **Transaction** – Linked to an `Account`. Records type (`deposit`, `withdrawal`), amount, and timestamp.
-5. **Loan** – Linked to a `Customer`. Stores loan type, amount, interest rate, and repayment period.
-6. **Staff** – Linked to a `Branch`. Stores staff member details and role.
+- **Customer** – first/last name, email (unique), phone (unique, validated), address.  
+  *Relationship:* One **Customer** → Many **Accounts**, Many **Loans**.
 
-**Relationships:**
-- **One-to-Many:**  
-  - One `Branch` → Many `Accounts`  
-  - One `Customer` → Many `Accounts`  
-  - One `Account` → Many `Transactions`
-- **One-to-One:**  
-  - N/A (all customer and staff relations are many-to-one)
-- **Foreign Keys** ensure relational integrity.
+- **Branch** – name, code (unique), city.  
+  *Relationship:* One **Branch** → Many **Accounts** (PROTECT on delete).
 
-### Step 3: Serializers and Validation Rules
-- Each model has a corresponding **ModelSerializer**.
-- Validation rules include:
-  - **Unique Email** for `Customer`.
-  - **Non-negative balance** in `Account`.
-  - **Positive transaction amounts** in `Transaction`.
-  - **Loan amount > 0** and **interest rate between 0–100** in `Loan`.
+- **Account** – account number (unique), type (Savings/Current), balance (non-negative), is_active.  
+  *Relationship:* One **Customer** → Many **Accounts**; One **Branch** → Many **Accounts**; One **Account** → One **Card**.
 
-### Step 4: Views/ViewSets
-- **ModelViewSets** are used for CRUD operations.
-- **Custom actions** for:
-  - Deposit and withdraw in `TransactionViewSet` (updates account balance automatically).
-- **Permissions**:
-  - Authenticated users can access endpoints.
-  - Staff-only access for certain administrative actions.
+- **Transaction** – account (FK), txn_type (Deposit/Withdraw), amount (>0), reference (unique), performed_at.  
+  *Relationship:* One **Account** → Many **Transactions**.
 
-### Step 5: URL Patterns
-- Used DRF `DefaultRouter` to auto-generate RESTful URLs:
-  - `/api/branches/`
-  - `/api/customers/`
-  - `/api/accounts/`
-  - `/api/transactions/`
-  - `/api/loans/`
-  - `/api/staff/`
-- `/api-auth/login/` enabled for session authentication.
+- **Loan** – customer (FK), principal_amount (>0), interest_rate (≥0), status (Pending/Approved/Repaid), dates.  
+  *Relationship:* One **Customer** → Many **Loans**.
+
+- **Card** – account (OneToOne), card_number (16 digits, unique), card_type (Debit/Credit), expiry_date, is_active.
+
+> All models inherit timestamps (`created_at`, `updated_at`) via an abstract  
+
+---
+
+### 2. Serializers and Validation
+
+- **CustomerSerializer, BranchSerializer, AccountSerializer, CardSerializer, LoanSerializer, TransactionSerializer**
+- Key validation rules:
+  - `Account.balance` **cannot be negative**.
+  - `Card.card_number` **must be exactly 16 digits**.
+  - `Loan.principal_amount` **> 0**, `Loan.interest_rate` **≥ 0**.
+  - `Transaction.amount` **> 0**; **withdrawals require sufficient balance**; **account must be active**.
+  - `Transaction.create()` updates the linked account balance **atomically**.
+
+---
+
+### 3. Views / ViewSets
+- **ModelViewSet** used for each model: `CustomerViewSet`, `BranchViewSet`, `AccountViewSet`, `CardViewSet`, `LoanViewSet`, `TransactionViewSet`.
+- **Permissions:** `IsAuthenticated` (session login via `/api-auth/login/` or admin login).  
+
+---
+
+### 4. URL Patterns
+Base prefix: `/api/`
+
+- `/api/customers/`
+- `/api/branches/`
+- `/api/accounts/`
+- `/api/cards/`
+- `/api/loans/`
+- `/api/transactions/`
+
+Other helpful routes:
+- `/admin/` – Django admin 
+
+---
+
+### 5. Testing Summary
+We used Django’s **built-in testing framework** to validate functionality.  
+
+**Test Cases Covered:**  
+- ✅ Account creation and retrieval  
+- ✅ Updating and deleting accounts  
+- ✅ Creating valid deposits and withdrawals  
+- ✅ Preventing withdrawals larger than balance  
+- ✅ Ensuring account balance updates correctly after transactions  
+
+---
+
+## Testing Evidence
+
+The following is the actual output from running `python manage.py test`:
+
+![Test Results](image.png)
