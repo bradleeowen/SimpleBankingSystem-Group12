@@ -90,3 +90,25 @@ We used Django’s **built-in testing framework** to validate functionality.
 The following is the actual output from running `python manage.py test`:
 
 ![Test Results](image.png)
+## Live API Docs
+- Swagger UI: `/docs/`
+- OpenAPI JSON: `/schema/`
+
+## Models & Relationships
+> Mermaid ER diagram (renders on GitHub).  
+> If it doesn’t render in your view, open `docs/er-diagram.mmd`.
+
+erDiagram
+  CUSTOMER ||--o{ ACCOUNT : has
+  BRANCH   ||--o{ ACCOUNT : hosts
+  ACCOUNT  ||--o{ TRANSACTION : records
+  CUSTOMER ||--o{ LOAN : borrows
+  ACCOUNT  ||--|| CARD : owns
+
+  CUSTOMER { int id string first_name string last_name string email string phone string address }
+  BRANCH   { int id string name string code string city }
+  ACCOUNT  { int id string account_number enum type decimal balance bool is_active }
+  TRANSACTION { int id enum txn_type decimal amount string reference datetime performed_at }
+  LOAN { int id decimal principal_amount decimal interest_rate enum status date start_date date end_date }
+  CARD { int id string card_number enum card_type date expiry_date bool is_active }
+
