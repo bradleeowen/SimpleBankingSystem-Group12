@@ -95,8 +95,8 @@ The following is the actual output from running `python manage.py test`:
 - OpenAPI JSON: `/schema/`
 
 ## Models & Relationships
-> Mermaid ER diagram (renders on GitHub).  
-> If it doesn’t render in your view, open `docs/er-diagram.mmd`.
+> Mermaid ER diagram.  
+> If it doesn’t render, open `docs/er-diagram.mmd`.
 
 ```mermaid
 erDiagram
