@@ -98,7 +98,7 @@ The following is the actual output from running `python manage.py test`:
 > Mermaid ER diagram (renders on GitHub).  
 > If it doesn’t render in your view, open `docs/er-diagram.mmd`.
 
-``mermaid
+```mermaid
 erDiagram
   CUSTOMER ||--o{ ACCOUNT : has
   BRANCH   ||--o{ ACCOUNT : hosts
@@ -112,5 +112,6 @@ erDiagram
   TRANSACTION { int id enum txn_type decimal amount string reference datetime performed_at }
   LOAN { int id decimal principal_amount decimal interest_rate enum status date start_date date end_date }
   CARD { int id string card_number enum card_type date expiry_date bool is_active }
-  ---
+```
+
 
